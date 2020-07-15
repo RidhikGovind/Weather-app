@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <title>My-Weather-app</title>
+</head>
+
+    <style>
+    body{
+        background-color: #1a2228;
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        min-height: 100vh;  
+    }
+
+    .container {
+        width: 400px;
+        height: 150px;
+        background-color: #fdfcfa;
+        text-align: center;
+        color: #020001;
+        font-family: 'Montserrat', sans-serif;
+        padding:0;
+        margin:0;
+        line-height: 3px;
+        border-radius: 10px;
+        box-shadow: 0px 20px 30px 5px rgba(0,0,0,1);
+        position:relative;
+        display: flex;
+        top: 180px;
+    }
+
+    .weather-info{
+        border-right: 8px solid #282C35;
+        border-radius: 20px;
+        width: 200px;
+        padding: 5px 10px;
+    }
+
+    .location{
+        font-size: 18px;
+        padding:0;
+        margin:0;
+        font-weight: 800;
+    }
+
+    .temp{
+        font-size: 35px;
+        line-height: 7px;
+        font-weight: bolder;
+    
+    }
+
+    .date {
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .desc {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .weather-icon{
+        
+        float: right;
+        width: 200px;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100%;
+    }
+
+    .small-part {
+        width: 7px;
+        height: 38px;
+        background-color: #282C35;
+        border-radius: 4px;
+        position: absolute;
+        right: 10px;
+
+    }
+
+    .status{
+        width: 12em;
+        height: 4em;
+        background-color: whitesmoke; 
+        position: absolute;
+        top: 30px;
+        text-align: center;
+        color: red;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        border-radius: 10px;
+        display:none;
+    }
+
+    </style>
+
+<body>
+    <div class="container">
+  
+        <div class="weather-info">
+            <div class="location">
+              <p>-</p>
+            </div>
+                <div class="temp">
+                  <p>-<span>°</span>C</p>
+            </div>
+            <div class="date">
+              <p>July 13 2020</p>
+            </div>
+            <div class="desc">
+              <p>-</p>
+            </div>
+        </div>
+      
+        <div class="weather-icon">
+          <img src="icons/unknown.png" class>
+          <div class="small-part"></div>
+      </div>
+    </div>
+
+    <div class="status"></div>
+
+    <script>
+       const city = document.querySelector('.location p');
+       const temp = document.querySelector('.temp p');
+       const date = document.querySelector('.date p');
+       const desc = document.querySelector('.desc p');
+       const icon = document.querySelector('.weather-icon');
+       const status = document.querySelector('.status ')
+
+
+        //creating a Date object and displaying it 
+        let d = new Date();
+
+        date.textContent = `${d.toLocaleDateString("en-US", {day:"numeric"})} ${d.toLocaleDateString("en-US",{month:"long"})} ${d.toLocaleDateString("en-US",{year:"numeric"})}`;
+
+
+       //first we create the weather object
+       const weather = {};
+
+       weather.temperature = {
+           unit: "celcius"
+       }
+
+       const kelvin = 273;
+
+       //api key
+       const key = "881ae135663f7fff485c5949934e8913";
+
+       //checking if browser supports geolocation
+       if(!navigator.geolocation) {
+     
+        console.log("hello mandiss")
+            status.style.display = "block";
+            status.innerHTML = "<p>Access Denied</p>";
+      
+        } else {
+            navigator.geolocation.getCurrentPosition(success,error);
+        }
+
+        function success(position) {
+
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+            getWeather(latitude,longitude);
+        }
+
+        function error() {
+        status.textContent = "GeoLocation not available";
+        }
+
+        //getting the location coordinates from api 
+
+        function getWeather(latitude,longitude) {
+            let api = `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${key}` ;
+            
+            console.log(api);
+            fetch(api)
+                .then(function(response) {
+                    let data = response.json();
+                    return data;
+                })
+                .then(function(data) {
+                    weather.location = data.name;
+                    weather.temperature.value = Math.floor(data.main.temp - kelvin);
+                    weather.description = data.weather[0].description;
+                    weather.iconId = data.weather[0].icon;
+                })
+                .then(function() {
+                    displayWeather();
+                })
+        
+        }
+        
+        function displayWeather() {
+            icon.innerHTML = `<img src="icons/${weather.iconId}.png"/>`;
+            temp.innerHTML = `${weather.temperature.value}<span>°</span>C`;
+            desc.innerHTML = weather.description;
+            city.innerHTML = weather.location;
+        }
+    
+
+            
+    </script>
+
+    </body>
+    </html>
+
+
+

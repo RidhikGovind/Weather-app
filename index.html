@@ -158,8 +158,15 @@
        //checking if browser supports geolocation
        if(navigator.geolocation) {
      
+<<<<<<< HEAD:index.html
         navigator.geolocation.getCurrentPosition(success,error);
         
+=======
+        
+            status.style.display = "block";
+            status.innerHTML = "<p>Access Denied</p>";
+      
+>>>>>>> ec84dba... Weather app new UI commit:MyWeatherapp.html
         } else {
             
             status.style.display = "block";
